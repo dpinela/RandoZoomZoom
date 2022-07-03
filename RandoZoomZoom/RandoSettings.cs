@@ -4,5 +4,6 @@ namespace RandoZoomZoom
     {
         public bool GoFast;
         public bool GetRich;
+        public bool SeeDouble;
     }
 }

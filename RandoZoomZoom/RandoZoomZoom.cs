@@ -25,6 +25,7 @@ namespace RandoZoomZoom
 
         public override void Initialize()
         {
+            RequestBuilder.OnUpdate.Subscribe(22f, RerollDreamers);
             RequestBuilder.OnUpdate.Subscribe(6f, GiveZoomZoomCharms);
             RequestBuilder.OnUpdate.Subscribe(-9999f, MakeZoomZoomCharmsFree);
             RandomizerMenuAPI.AddMenuPage(BuildMenu, BuildButton);
@@ -104,6 +105,36 @@ namespace RandoZoomZoom
                         rb.ctx.notchCosts[j]++;
                     }
                 }
+            }
+        }
+
+        private void RerollDreamers(RequestBuilder rb)
+        {
+            if (Settings.SeeDouble)
+            {
+                var dreamers = new HashSet<string>() { "Lurien", "Monomon", "Herrah", PlaceholderItem.Prefix + "Dreamer" };
+                var replacements = new string[] { "Lurien", "Monomon", "Herrah" };
+
+                var numStarters = 0;
+                foreach (var d in new string[] { "Lurien", "Monomon", "Herrah", "Dreamer" })
+                {
+                    numStarters += rb.StartItems.GetCount(d);
+                    rb.RemoveFromStart(d);
+                }
+                for (var i = 0; i < numStarters; i++)
+                {
+                    rb.AddToStart(replacements[rb.rng.Next(replacements.Length)]);
+                }
+
+                IEnumerable<string> NRandomDreamers(string unused, int n)
+                {
+                    for (var i = 0; i < n; i++)
+                    {
+                        yield return replacements[rb.rng.Next(replacements.Length)];
+                    }
+                }
+
+                rb.ReplaceItem(dreamers.Contains, NRandomDreamers);
             }
         }
 
