@@ -33,26 +33,33 @@ namespace RandoZoomZoom
 
         private void GiveZoomZoomCharms(RequestBuilder rb)
         {
+            var givenCharms = new List<string>();
             if (Settings.GoFast)
             {
-                foreach (var charm in new string[] {"Dashmaster", "Sprintmaster"})
+                givenCharms.Add("Dashmaster");
+                givenCharms.Add("Sprintmaster");
+            }
+            if (Settings.GetRich)
+            {
+                givenCharms.Add("Gathering_Swarm");
+            }
+            foreach (var charm in givenCharms)
+            {
+                // In case rando already gave these charms as starting items,
+                // we don't want to add another copy
+                rb.RemoveFromStart(charm);
+                rb.AddToStart(charm);
+                rb.RemoveItemByName(charm);
+                rb.EditItemRequest(charm, info =>
                 {
-                    // In case rando already gave these charms as starting items,
-                    // we don't want to add another copy
-                    rb.RemoveFromStart(charm);
-                    rb.AddToStart(charm);
-                    rb.RemoveItemByName(charm);
-                    rb.EditItemRequest(charm, info =>
+                    var orig = info.realItemCreator;
+                    info.realItemCreator = (factory, placement) =>
                     {
-                        var orig = info.realItemCreator;
-                        info.realItemCreator = (factory, placement) =>
-                        {
-                            var item = orig != null ? orig(factory, placement) : factory.MakeItem(charm);
-                            item.GetOrAddTag<ItemChanger.Tags.EquipCharmOnGiveTag>();
-                            return item;
-                        };
-                    });
-                }
+                        var item = orig != null ? orig(factory, placement) : factory.MakeItem(charm);
+                        item.GetOrAddTag<ItemChanger.Tags.EquipCharmOnGiveTag>();
+                        return item;
+                    };
+                });
             }
         }
 
@@ -61,6 +68,18 @@ namespace RandoZoomZoom
             // index within the array is one less than the charm number
             const int Dashmaster = 31 - 1;
             const int Sprintmaster = 37 - 1;
+            const int GatheringSwarm = 1 - 1;
+
+            var givenCharmSet = 0L;
+            if (Settings.GoFast)
+            {
+                givenCharmSet |= 1L << Dashmaster;
+                givenCharmSet |= 1L << Sprintmaster;
+            }
+            if (Settings.GetRich)
+            {
+                givenCharmSet |= 1L << GatheringSwarm;
+            }
 
             int PickAnotherCharm()
             {
@@ -69,18 +88,21 @@ namespace RandoZoomZoom
                 {
                     i = rb.rng.Next(40);
                 }
-                while (i == Dashmaster || i == Sprintmaster);
+                while ((givenCharmSet & (1L << i)) != 0);
                 return i;
             }
 
-            foreach (var i in new int[] {Dashmaster, Sprintmaster})
+            for (var i = 0; i <= 40; i++)
             {
-                // Transfer any notches given to these charms to other charms.
-                while (rb.ctx.notchCosts[i] > 0)
+                if ((givenCharmSet & (1L << i)) != 0)
                 {
-                    var j = PickAnotherCharm();
-                    rb.ctx.notchCosts[i]--;
-                    rb.ctx.notchCosts[j]++;
+                    // Transfer any notches given to these charms to other charms.
+                    while (rb.ctx.notchCosts[i] > 0)
+                    {
+                        var j = PickAnotherCharm();
+                        rb.ctx.notchCosts[i]--;
+                        rb.ctx.notchCosts[j]++;
+                    }
                 }
             }
         }
