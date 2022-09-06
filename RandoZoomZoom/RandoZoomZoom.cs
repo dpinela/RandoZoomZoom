@@ -12,7 +12,7 @@ namespace RandoZoomZoom
 {
     public class RandoZoomZoom : Mod, IGlobalSettings<RandoSettings>
     {
-        public override string GetVersion() => "1.0";
+        public override string GetVersion() => "1.0.1";
 
         private RandoSettings Settings = new();
 
@@ -100,6 +100,9 @@ namespace RandoZoomZoom
                     while (rb.ctx.notchCosts[i] > 0)
                     {
                         var j = PickAnotherCharm();
+                        if (rb.ctx.notchCosts[j] >= 6) {
+                            continue;
+                        }
                         rb.ctx.notchCosts[i]--;
                         rb.ctx.notchCosts[j]++;
                     }
