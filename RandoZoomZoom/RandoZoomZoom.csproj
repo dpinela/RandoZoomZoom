@@ -34,6 +34,9 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>$(HK15PATH)/UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>$(HK15PATH)/UnityEngine.UI.dll</HintPath>
+    </Reference>
     <Reference Include="RandomizerMod">
       <HintPath>$(HK15PATH)/Mods/Randomizer 4/RandomizerMod.dll</HintPath>
     </Reference>

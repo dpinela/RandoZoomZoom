@@ -12,7 +12,7 @@ namespace RandoZoomZoom
 {
     public class RandoZoomZoom : Mod, IGlobalSettings<RandoSettings>
     {
-        public override string GetVersion() => "1.0.1";
+        public override string GetVersion() => "1.0.2";
 
         private RandoSettings Settings = new();
 
@@ -119,10 +119,16 @@ namespace RandoZoomZoom
             new VerticalItemPanel(SettingsPage, new(0, 300), 75f, true, factory.Elements);
         }
 
+        private UnityEngine.Color ButtonColor() =>
+            Settings.Enabled() ? Colors.TRUE_COLOR : Colors.DEFAULT_COLOR;
+
         private bool BuildButton(MenuPage landingPage, out SmallButton settingsButton)
         {
-            settingsButton = new(landingPage, GetName());
-            settingsButton.AddHideAndShowEvent(landingPage, SettingsPage);
+            var button = new SmallButton(landingPage, GetName());
+            SettingsPage.BeforeGoBack += () => button.Text.color = ButtonColor();
+            button.Text.color = ButtonColor();
+            button.AddHideAndShowEvent(landingPage, SettingsPage);
+            settingsButton = button;
             return true;
         }
 
