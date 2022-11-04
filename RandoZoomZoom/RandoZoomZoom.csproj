@@ -49,6 +49,9 @@
     <Reference Include="MenuChanger">
       <HintPath>$(HK15PATH)/Mods/MenuChanger/MenuChanger.dll</HintPath>
     </Reference>
+    <Reference Include="RandoSettingsManager">
+      <HintPath>$(HK15PATH)/Mods/RandoSettingsManager/RandoSettingsManager.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Target Name="ClearReferenceCopyLocalPaths" AfterTargets="ResolveAssemblyReferences">
     <ItemGroup>

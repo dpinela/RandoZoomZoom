@@ -12,7 +12,7 @@ namespace RandoZoomZoom
 {
     public class RandoZoomZoom : Mod, IGlobalSettings<RandoSettings>
     {
-        public override string GetVersion() => "1.0.2";
+        public override string GetVersion() => "1.0.3";
 
         private RandoSettings Settings = new();
 
@@ -29,6 +29,11 @@ namespace RandoZoomZoom
             RequestBuilder.OnUpdate.Subscribe(-9999f, MakeZoomZoomCharmsFree);
             RandomizerMenuAPI.AddMenuPage(BuildMenu, BuildButton);
             SettingsLog.AfterLogSettings += LogRandoSettings;
+
+            if (ModHooks.GetMod("RandoSettingsManager") != null)
+            {
+                HookRandoSettingsManager();
+            }
         }
 
         private void GiveZoomZoomCharms(RequestBuilder rb)
@@ -111,12 +116,13 @@ namespace RandoZoomZoom
         }
 
         private MenuPage SettingsPage;
+        private MenuElementFactory<RandoSettings> mef;
 
         private void BuildMenu(MenuPage landingPage)
         {
             SettingsPage = new MenuPage(GetName(), landingPage);
-            var factory = new MenuElementFactory<RandoSettings>(SettingsPage, Settings);
-            new VerticalItemPanel(SettingsPage, new(0, 300), 75f, true, factory.Elements);
+            mef = new MenuElementFactory<RandoSettings>(SettingsPage, Settings);
+            new VerticalItemPanel(SettingsPage, new(0, 300), 75f, true, mef.Elements);
         }
 
         private UnityEngine.Color ButtonColor() =>
@@ -136,6 +142,19 @@ namespace RandoZoomZoom
         {
             w.WriteLine("Logging RandoZoomZoom settings:");
             w.WriteLine(JsonUtil.Serialize(Settings));
+        }
+
+        private void HookRandoSettingsManager()
+        {
+            RandoSettingsManager.RandoSettingsManagerMod.Instance.RegisterConnection(new RandoSettingsManagerProxy()
+            {
+                getter = () => Settings,
+                setter = rs =>
+                {
+                    Settings = rs;
+                    mef?.SetMenuValues(rs);
+                }
+            });
         }
     }
 }
