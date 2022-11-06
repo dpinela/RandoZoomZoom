@@ -151,8 +151,14 @@ namespace RandoZoomZoom
                 getter = () => Settings,
                 setter = rs =>
                 {
-                    Settings = rs;
-                    mef?.SetMenuValues(rs);
+                    if (mef == null)
+                    {
+                        Settings = rs;
+                    }
+                    else
+                    {
+                        mef.SetMenuValues(rs);
+                    }
                 }
             });
         }
