@@ -15,7 +15,7 @@ namespace RandoZoomZoom
         public override bool TryProvideSettings(out RandoSettings? sent)
         {
             sent = getter();
-            return true;
+            return sent.Enabled();
         }
 
         public override void ReceiveSettings(RandoSettings? received)

@@ -12,7 +12,7 @@ namespace RandoZoomZoom
 {
     public class RandoZoomZoom : Mod, IGlobalSettings<RandoSettings>
     {
-        public override string GetVersion() => "1.0.3";
+        public override string GetVersion() => "1.0.4";
 
         private RandoSettings Settings = new();
 
